@@ -201,6 +201,83 @@ public:
         _is_caps_locked = isLocked;
     }
 };
-#endif
+#endif // MARAUDER_CARDPUTER
+
+#ifdef LILYGO_T_DECK
+
+#include <Wire.h>
+#include <vector>
+#include "Keyboard_def.h"
+
+#define TDECK_KB_I2C_ADDRESS 0x55
+#define TDECK_KB_POWER_PIN   10
+#define TDECK_KB_SDA         18
+#define TDECK_KB_SCL         8
+
+class Keyboard_Class
+{
+public:
+    struct KeysState
+    {
+        bool tab = false;
+        bool fn = false;
+        bool shift = false;
+        bool ctrl = false;
+        bool opt = false;
+        bool alt = false;
+        bool del = false;
+        bool enter = false;
+        bool space = false;
+        uint8_t modifiers = 0;
+
+        std::vector<char> word;
+        std::vector<uint8_t> hid_keys;
+        std::vector<uint8_t> modifier_keys;
+
+        void reset()
+        {
+            tab = false;
+            fn = false;
+            shift = false;
+            ctrl = false;
+            opt = false;
+            alt = false;
+            del = false;
+            enter = false;
+            space = false;
+            modifiers = 0;
+            word.clear();
+            hid_keys.clear();
+            modifier_keys.clear();
+        }
+    };
+
+    const char _ascii_list[95] = {
+        'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p',
+        'q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F',
+        'G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V',
+        'W','X','Y','Z',' ','0','1','2','3','4','5','6','7','8','9','-',
+        '=','[',']',';','\'',',','.','/','`','\\','_','+','{','}',':',
+        '"','<','>','?','~','|','!','@','#','$','%','^','&','*','(',')'
+    };
+
+private:
+    KeysState _keys_state_buffer;
+    char _cached_key;
+
+public:
+    Keyboard_Class() : _cached_key(0) {}
+
+    void begin();
+    void updateKeyList();
+    void updateKeysState();
+    bool isKeyPressed(char c);
+
+    inline KeysState &keysState()
+    {
+        return _keys_state_buffer;
+    }
+};
+#endif // LILYGO_T_DECK
 
 #endif

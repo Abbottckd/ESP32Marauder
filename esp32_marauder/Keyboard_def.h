@@ -3,7 +3,7 @@
 
 #include "configs.h"
 
-#ifdef MARAUDER_CARDPUTER
+#if defined(MARAUDER_CARDPUTER) || defined(LILYGO_T_DECK)
 
 #define SHIFT 0x80
 
@@ -150,6 +150,6 @@ const uint8_t _kb_asciimap[128] = {
     0             // DEL
 };
 
-#endif
+#endif // MARAUDER_CARDPUTER || LILYGO_T_DECK
 
 #endif
