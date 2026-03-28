@@ -266,4 +266,61 @@ void Keyboard_Class::updateKeysState()
     }
 }
 
-#endif
+#endif // MARAUDER_CARDPUTER
+
+#ifdef LILYGO_T_DECK
+
+#include <Arduino.h>
+
+void Keyboard_Class::begin()
+{
+    pinMode(TDECK_KB_POWER_PIN, OUTPUT);
+    digitalWrite(TDECK_KB_POWER_PIN, HIGH);
+    delay(100);
+    Wire.begin(TDECK_KB_SDA, TDECK_KB_SCL);
+}
+
+void Keyboard_Class::updateKeyList()
+{
+    // Only read from I2C if cache is empty to avoid losing unprocessed key
+    if (_cached_key == 0) {
+        Wire.requestFrom((uint8_t)TDECK_KB_I2C_ADDRESS, (uint8_t)1);
+        if (Wire.available()) {
+            char key = Wire.read();
+            if (key != 0) {
+                _cached_key = key;
+            }
+        }
+    }
+}
+
+void Keyboard_Class::updateKeysState()
+{
+    _keys_state_buffer.reset();
+    if (_cached_key != 0) {
+        char key = _cached_key;
+        _cached_key = 0;  // Consume cached key
+        if (key == '\b' || key == 8) {
+            _keys_state_buffer.del = true;
+        } else if (key == '\n' || key == '\r') {
+            _keys_state_buffer.enter = true;
+        } else if (key == '\t') {
+            _keys_state_buffer.tab = true;
+        } else if (key == ' ') {
+            _keys_state_buffer.space = true;
+        } else {
+            _keys_state_buffer.word.push_back(key);
+        }
+    }
+}
+
+bool Keyboard_Class::isKeyPressed(char c)
+{
+    if (_cached_key != 0 && _cached_key == c) {
+        _cached_key = 0;
+        return true;
+    }
+    return false;
+}
+
+#endif // LILYGO_T_DECK
