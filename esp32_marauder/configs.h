@@ -2605,9 +2605,7 @@
     #define MEM_LOWER_LIM 10000
   #elif defined(MARAUDER_V8)
     #define MEM_LOWER_LIM 10000
-  #elif defined(MARAUDER_MINI_V3)
-    #define MEM_LOWER_LIM 10000
-  #elif defined(LILYGO_T_DECK)
+  #elif defined(MARAUDER_MINI_V3) || defined(LILYGO_T_DECK)
     #define MEM_LOWER_LIM 10000
   #endif
   //// END MEMORY LOWER LIMIT STUFF
